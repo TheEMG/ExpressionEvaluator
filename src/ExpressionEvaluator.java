@@ -12,9 +12,26 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+/**
+ * This class is responsible for reading and evaluating polynomial expressions from a file.
+ * It parses expressions into terms, builds a polynomial representation, and then evaluates 
+ * the polynomial for a specific value of 'x' provided at the end of each line in the input file.
+ * The results are written to an output file.
+ * 
+ * <p>Usage: Place an input file 'input-1.txt' in the program's directory with lines of 
+ * coefficients and exponents. The last two numbers in each line should be negative to signal 
+ * the end of the polynomial, followed by the value of 'x' to evaluate the polynomial.</p>
+ * 
+ */
 class ExpressionEvaluator{
+	  /**
+     * The main method reads the input file 'input-1.txt', processes each line to create 
+     * polynomial objects, evaluates them, and writes the result to 'output.txt'.
+     * 
+     * @param args Command-line arguments (not used).
+     * @throws IOException If there is an error reading the file or writing to the output file.
+     */
 	public static void main(String[] args)throws IOException{
-
 
 		// Create a Scanner object to read input from file
 		Scanner input = new Scanner(new File("input-1.txt"));
@@ -52,8 +69,6 @@ class ExpressionEvaluator{
 
 				// Gets the last digit after termination condition.
 				i = i + 2;
-
-
 			}
 
 			//Last digit of the end of the line is stored in x 
@@ -62,255 +77,9 @@ class ExpressionEvaluator{
 			// "X" is evaluated as well as displayed in the output file.
 			outFile.print(poly.evaluate(x));
 			outFile.print("\n");
-
-
-
-
-
 		}
 		// close scanner and file Writer
 		outFile.close();
 		input.close();
-
 	}
 }
-
-
-
-
-
-class Polynomial
-{
-	private Term head;
-	public  Polynomial() 
-	{
-		head = null;
-	}
-
-
-	//Method takes in a coefficient and exponent and begun to add terms of the polynomial 
-	public void addTerms(int coefficient,int exponent ) 
-	{
-		Term newTerm  = new Term(coefficient,exponent);
-
-		//if the polynomial is empty set the term to the head 
-		if (head ==null) 
-		{
-			head = newTerm;
-			return;
-		}
-		//Inserting new terms in descending order of exponents
-		Term currentTerm  =head;
-		Term previousTerm = null;
-
-
-		while(currentTerm != null && currentTerm.getExponent() > exponent) 
-		{
-			previousTerm = currentTerm;
-			currentTerm = currentTerm.getNext();
-		}
-
-		if(currentTerm != null && currentTerm.getExponent() == exponent) 
-		{
-			//We add the coefficent if the condition above is met 
-			currentTerm.setCoefficient(currentTerm.getCoefficent()+coefficient);
-		}
-		else 
-		{
-			//Insert the term in the correct position 
-			newTerm.setNext(currentTerm);
-			if(previousTerm != null) 
-			{
-				previousTerm.setNext(newTerm);
-			}
-			else 
-			{
-				head= newTerm;
-			}
-		}
-
-
-
-	}
-
-	//Method is used to evaluate "X". 
-	public String evaluate(int x) {
-		int answer = 0;
-
-		StringBuilder builder = new StringBuilder();
-		
-		/*Traversing the list; starting with the head  
-		 * Gets the current coefficient and multiplies it by the value of the last digit  in the line file 
-		 * and the last digit will then multiplied by the current exponent
-		 * The output will also be modified 
-		 */
-
-		while( head != null) {
-			answer += head.getCoefficent() *Math.pow(x,  head.getExponent());
-			builder.append( head.toString());
-			if( head.getNext() !=null &&  head.getNext().getCoefficent()>0 ) {
-				builder.append("+");
-			}
-			else if( head.getNext() !=null &&  head.getNext().getCoefficent()<0)
-			{
-				builder.append("+");
-			}
-			else if( head.getNext() !=null &&  head.getNext().getCoefficent()==0) {
-				builder.append("");
-			}
-			head =  head.getNext();
-			
-		}
-		//Puts all the pieces of the output together 
-
-		builder.append("=").append(answer).append(" FOR X = ").append(x);
-		return builder.toString();
-	}
-
-
-
-	//Method is used to overrde the object toString because if it's not 
-	//Overriden then It would get a hash location 
-	//This Method is used for formatting 
-	public String toString()
-	{
-		StringBuilder stringBuilder = new StringBuilder();
-		if (head != null) {
-			stringBuilder.append(head.toString());
-			Term current = head.getNext();
-
-			//Assuming the polynomial is not empty (because that would mean that the head is referencing null)then then
-			//the first term is appended to a string representation 
-			while (current != null) {
-				//append + if the coefficient is > 0
-				//append - if the coefficient is < 0
-				if(current.getCoefficent()>0 || current.getCoefficent()<0) {
-					stringBuilder.append(" + ");
-				}
-
-				//After the first term is appended to the string builder then 
-				//we start to traverse the list , and based on the coefficient value 
-				//then the appropriate sign will be appended to the coefficient
-				stringBuilder.append(current.toString());
-				current = current.getNext();
-			}
-		}
-		return stringBuilder.toString();
-
-	}
-
-}
-
-class Term{
-
-
-	//Data Fields 
-	private int coefficient;
-	private int exponent;
-	private Term next;
-
-	//Creates a new object "Term "with two int parameters , coefficent and exponent 
-	public Term(int coefficient, int exponent) {
-		this.coefficient = coefficient;
-		this.exponent = exponent;
-		this.next = null;
-
-	}
-
-
-
-
-	/*Gets the coefficient of the term 
-	 * returns coefficient of the term 
-	 */
-	public int getCoefficent() {
-		return coefficient;
-	}
-
-	/*Gets the exponent of the term 
-	 * returns the exponent of the term
-	 */
-	public int getExponent() {
-		return exponent;
-	}
-
-	/*Sets the Coefficient of the term
-	 * @param coefficient 
-	 */
-	public void setCoefficient (int coefficient) {
-		this.coefficient = coefficient;
-	}
-
-	/*Sets the exponent of the term 
-	 * @param exponent
-	 * */
-	public void setExponent (int exponent) {
-		this.exponent = exponent;
-	}
-
-	//Gets the next term in the polynomial 
-	//Returns next
-	public Term getNext() {
-		return next;
-	}
-
-	/*Sets the next term 
-	 * @param Term next 
-	 */
-	public void setNext(Term next) {
-		this.next = next;
-	}
-
-
-	//Method is used to overrde the object toString because if it's not 
-	//Overriden then I would get a hash location 
-	//This Method is used for formatting 
-	public String toString() 
-	{
-		if(exponent == 0 && coefficient < 0) {
-			String placeHolder = "";
-			placeHolder = Integer.toString(coefficient);
-			return "("+placeHolder +")";
-
-		}
-		else if(exponent  == 0 && coefficient > 0) {
-			String placeHolder = "";
-			placeHolder = Integer.toString(coefficient);
-			return placeHolder;
-		}else if (exponent  == 1 && coefficient == 0){
-			return "";
-
-		}
-		else if (exponent == 1) {
-			if (coefficient == 1) {
-				return "x";
-			} 
-			else if (coefficient == -1) {
-				return "-x";
-			} 
-			else {
-				return coefficient + "x";
-			}
-		} 
-		else {
-			if (coefficient == 1) {
-				return "x^" + exponent;
-			} 
-			else if (coefficient == -1) {
-				return "-x^" + exponent;
-			} 
-			else if (coefficient < 0){
-				return "("+coefficient +")"+ "x^" + exponent;
-			}
-			else {
-				return coefficient + "x^" + exponent;
-			}
-		}
-	}
-}
-
-
-
-
-
-
